@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>js无极分类，树形目录</title>
+    <link rel="stylesheet" type="text/css" href="css/layui.css"/>
+    <style type="text/css">
+        fieldset{border: 1px solid #ccc;color: #666;padding: 10px;margin: 50px;height: 500px;}
+        li{
+            display: block;
+            cursor: pointer;
+            list-style-type: none;
+            padding:3px 22px;
+        }
+        .node {
+            background-image: url(images/sprite.png);
+            background-position: -321px -81px;
+            width: 22px;
+            height: 22px;
+            position: absolute;
+        }
+        .last{
+            background-image: url(images/sprite.png);
+            background-position: -330px -157px;
+            width: 22px;
+            height: 20px;
+        }
+    </style>
+    <script type="text/javascript" charset="UTF-8">
+        //读取json文件：（jsonp代理模式，解决跨域问题）
+        //myJson为回调函数名称，需要与 src 中一致，而且要与文件地址中名一致。jsonp格式 名称({}),不然无法获取到对应的文件
+        function myJson(result){
+            //打印 data.json中的数据
+            //console.log(result);
+            //读取菜单目录
+            GetData(0, result.data);
+            $(".tree").append(menus);
+        }
+
+        //菜单列表html
+        var menus = '';
+
+        /*
+         * 根据菜单主键id生成菜单列表
+        * id：菜单主键id
+        * arry：菜单数组信息
+       */
+        function GetData(id, arry) {
+            var childArry = GetParentArry(id, arry);
+            if (childArry.length > 0) {
+                //只显示第一个主菜单
+                if(childArry[0].parentId==0){
+                    menus+='<ul class="sub">';
+                } else{
+                    menus+='<ul class="sub" style="display:none;">';
+                }
+                for (var i in childArry) {
+                    //树形背景线
+                    if(childArry[i].parentId!=0){
+
+                        if(i==childArry.length-1){
+                            menus+='<div class="last node line"></div>';
+                        }else{
+                            menus+='<div class="node"></div>';
+                        }
+                    }
+                    //字体图标
+                    menus += '<li><i class="layui-icon">';
+                    if(childArry[i].parentId==0){
+                        menus+='&#xe68e;';
+                    }else if(childArry[i].parentId==1){
+                        menus+='&#xe66b;';
+                    }else if(childArry[i].parentId==2){
+                        menus+='&#xe623;';
+                    }else{
+                        menus+='&#xe621;';
+                    }
+                    menus+='</i> ' + childArry[i].name;
+                    //menus += ' ('+childArry[i].remark+')';//这行是菜单备注，不要可以删掉
+                    GetData(childArry[i].id, childArry[i].children);
+                    menus += '</li>';
+                }
+                menus += '</ul>';
+            }
+        }
+        /*
+         * 根据菜单主键id获取下级菜单
+         * id：菜单主键id
+         * arry：菜单数组信息
+        */
+        function GetParentArry(id, arry) {
+            var newArry = new Array();
+            for (var i in arry) {
+                if (arry[i].parentId == id)
+                    newArry.push(arry[i]);
+            }
+            return newArry;
+        }
+    </script>
+</head>
+<body>
+<fieldset>
+    <legend>目录</legend>
+    <div class="tree"></div>
+</fieldset>
+<script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="tree.json?callback=myJson" charset="UTF-8"></script>
+<script type="text/javascript">
+    $(function(){
+        //菜单展开和闭合
+        $(".sub li").click(function(event){
+            var ul=$(this).children("ul");
+            ul.slideToggle();
+            //阻止js冒泡
+            event.stopPropagation();
+        });
+    });
+</script>
+</body>
+</html>

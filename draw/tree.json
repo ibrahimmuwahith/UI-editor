@@ -1,0 +1,51 @@
+{
+  "code": 0,
+  "data": [
+    {
+      "children": [
+        {
+          "children": [
+            {
+              "children": [ ],
+              "id": 5,
+              "name": "教师1组",
+              "parentId": 2,
+              "remark": "政教处...."
+            },
+            {
+              "children": [
+                {
+                  "children": [ ],
+                  "id": 8,
+                  "name": "教师3组",
+                  "parentId": 7,
+                  "remark": "sdsa"
+                }
+              ],
+              "id": 7,
+              "name": "教师2组",
+              "parentId": 2,
+              "remark": "sdsa"
+            }
+          ],
+          "id": 2,
+          "name": "政教处",
+          "parentId": 1,
+          "remark": "政教处...."
+        },
+        {
+          "children": [ ],
+          "id": 3,
+          "name": "政教处1",
+          "parentId": 1,
+          "remark": "政教处...."
+        }
+      ],
+      "id": 1,
+      "name": "学校",
+      "parentId": 0,
+      "remark": "最顶级部门"
+    }
+  ],
+  "msg": "OK"
+}

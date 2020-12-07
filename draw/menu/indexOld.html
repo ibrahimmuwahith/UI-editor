@@ -1,0 +1,1312 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+    <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
+    <title>pen</title>
+    <script type="text/javascript" src="js/ajax.js"></script>
+    <script type="text/javascript" src="js/context-menu.js"></script><!-- IMPORTANT! INCLUDE THE context-menu.js FILE BEFORE drag-drop-folder-tree.js -->
+    <script type="text/javascript" src="js/menu.js"></script>
+    <script type="text/javascript" src="js/svg.js"></script>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <link rel="stylesheet" href="css/drag-drop-folder-tree.css" type="text/css"></link>
+    <link rel="stylesheet" href="css/context-menu.css" type="text/css"></link>
+    <link href="css/icon.css" rel="stylesheet">
+    <style type="text/css">
+        .dhtmlgoodies_tree img{
+            border:0px;
+            width: 16px;
+            height: 16px;
+        }
+        #LeftMenu{
+            background-color: #f7f7f7;
+            border-right: solid 1px #e8e8e8;
+            width: 280px;
+            height: 100%;
+            min-height: 1000px;
+        }
+        .fa.ind1{
+            width: 200px;
+            height: 30px;
+            border: solid 1px #1d79d9;
+        }
+        .fa.ind2{
+            width: 80px;
+            height: 30px;
+            color:red;
+            background-image: url(images/aw.svg);
+            background-position: 0% 50%;
+            background-size: 55px 15px;
+            background-repeat: no-repeat; /*??repeat-x,y?*/
+        }
+
+        .fa{
+            color:#1e9fff;
+
+        }
+        i.fa-angle-right{
+            font-size: 16px;
+
+            width: 20px;
+        }
+
+        i.fa-angle-down{
+            color: #272727;
+            font-size: 16px;
+             width: 20px;
+        }
+        li.icon{
+
+        }
+        #pointShow{
+            border:solid 1px #1E9FFF;
+            position: absolute;
+            width: 500px;
+            height: 300px;
+            border-radius: 3px;
+            display: none;
+            /*这里特别重要，避免由于本层遮挡导致的闪烁*/
+            pointer-events: none;
+        }
+        #pointMenuShow{
+            border:solid 1px #cccccc;
+            position: absolute;
+            width: 500px;
+            height: 300px;
+            border-radius: 3px;
+            display: none;
+            /*这里特别重要，避免闪烁*/
+            pointer-events: none;
+        }
+
+        /*选取层*/
+        .tempDiv{
+            border:1px dashed blue;
+            background:#5a72f8;
+            position:absolute;
+            width:0;
+            height:0;
+            filter:alpha(opacity:10);
+            opacity:0.1;
+        }
+
+    </style>
+    <script type="text/javascript">
+        //--------------------------------
+        // Save functions  background-color:rgba(255,255,0,0.2);
+        //--------------------------------
+        var ajaxObjects = new Array();
+
+        // Use something like this if you want to save data by Ajax.
+        function saveMyTree()
+        {
+            saveString = treeObj.getNodeOrders();
+            var ajaxIndex = ajaxObjects.length;
+            ajaxObjects[ajaxIndex] = new sack();
+            var url = 'saveNodes.php?saveString=' + saveString;
+            ajaxObjects[ajaxIndex].requestFile = url;	// Specifying which file to get
+            ajaxObjects[ajaxIndex].onCompletion = function() { saveComplete(ajaxIndex); } ;	// Specify function that will be executed after file has been found
+            ajaxObjects[ajaxIndex].runAJAX();		// Execute AJAX function
+
+        }
+        function saveComplete(index)
+        {
+            alert(ajaxObjects[index].response);
+        }
+        // Call this function if you want to save it by a form.
+        function saveMyTree_byForm()
+        {
+            document.myForm.elements['saveString'].value = treeObj.getNodeOrders();
+            document.myForm.submit();
+        }
+    </script>
+    <script type="application/javascript">
+
+        var coverControlObject = null;
+        var currentControlObject = null;
+        var currentControlObjectNative = null;
+
+        var currentMainSvg=null;
+        //坐标准换
+        function ChangePosition(){
+
+        }
+        //平移
+        function TransLate(x,y) {
+            this.types=1;
+            this.x=parseFloat(x);
+            this.y=parseFloat(y);
+            this.ToString=function () {
+                return "translate("+this.x+","+this.y+")";
+            }
+            this.Parse=function (values) {
+                if(values){
+                    if(values.indexOf("(")>=0)
+                        values=values.split("(")[1];
+                    if(values.indexOf(")")>=0)
+                        values=values.split(")")[0];
+                    if(values.indexOf(",")>=0){
+                        this.x=parseFloat(values.split(",")[0]);
+                        this.y=parseFloat(values.split(",")[1]);
+                    }else{
+                        console.log("parse error");
+                    }
+                }else{
+                    console.log("parse TransLate get null value!");
+                }
+            }
+        }
+        //旋转 度数 x y
+        function Rotate(d,x,y) {
+            this.types=2;
+            this.d=parseFloat(d);
+            this.x=parseFloat(x);
+            this.y=parseFloat(y);
+            this.ToString=function () {
+                if(this.x&&this.y)
+                    return "rotate("+this.d+","+this.x+","+this.y+")";
+                else
+                    return "rotate("+this.d+")";
+
+            }
+            this.Parse=function (values) {
+                if(values){
+                    if(values.indexOf("(")>=0)
+                        values=values.split("(")[1];
+                    if(values.indexOf(")")>=0)
+                        values=values.split(")")[0];
+
+                    if(values.indexOf(",")>=0){
+                        this.d=parseFloat(values.split(",")[0]);
+                        this.x=parseFloat(values.split(",")[1]);
+                        this.y=parseFloat(values.split(",")[2]);
+
+                    }else{
+                        this.d=parseFloat(values);
+                    }
+                }else{
+                    console.log("parse rorate get null value!");
+                }
+            }
+        }
+
+        function Scale(sx,sy) {
+            this.types=3;
+            this.sx=parseFloat(sx);
+            this.sy=parseFloat(sy);
+            this.ToString=function () {
+                return "scale("+this.sx+","+this.sy+")";
+            }
+            this.Parse=function (values) {
+                if(values){
+                    if(values.indexOf("(")>=0)
+                        values=values.split("(")[1];
+                    if(values.indexOf(")")>=0)
+                        values=values.split(")")[0];
+                    if(values.indexOf(",")>=0){
+                        this.sx=parseFloat(values.split(",")[0]);
+                        this.sy=parseFloat(values.split(",")[1]);
+                    }else{
+                        console.log("parse error");
+                    }
+                }else{
+                    console.log("parse scale get null value!");
+                }
+            }
+        }
+
+        function SkewX(d) {
+            this.types=4;
+            this.d=parseFloat(d);
+            this.ToString=function () {
+                return "skewX("+this.d+")";
+            }
+            this.Parse=function (values) {
+                if(values){
+                    if(values.indexOf("(")>=0)
+                        values=values.split("(")[1];
+                    if(values.indexOf(")")>=0)
+                    {
+                        values=values.split(")")[0];
+                        this.d=parseFloat(values);
+                    }
+                }else{
+                    console.log("parse skewX get null value!");
+                }
+            }
+        }
+
+        function SkewY(d) {
+            this.types=5;
+            this.d=parseFloat(d);
+            this.ToString=function () {
+                return "skewY("+this.d+")";
+            }
+            this.Parse=function (values) {
+                if(values){
+                    if(values.indexOf("(")>=0)
+                        values=values.split("(")[1];
+                    if(values.indexOf(")")>=0)
+                    {
+                        values=values.split(")")[0];
+                        this.d=parseFloat(values);
+                    }
+                }else{
+                    console.log("parse SkewY get null value!");
+                }
+            }
+        }
+
+
+        function TransValues(values) {
+            this.objects=new Array();
+            if(values) {
+                v = values.split(")");
+                for (i = 0; i < v.length; i++) {
+                    v[i] = v[i] + ")";
+                    if (v[i].indexOf("translate") >= 0) {
+                        var o = new TransLate();
+                        o.Parse(v[i]);
+                        this.objects.push(o);
+                    } else if (v[i].indexOf("rotate") >= 0) {
+                        var o = new Rotate();
+                        o.Parse(v[i]);
+                        this.objects.push(o);
+                    } else if (v[i].indexOf("scale") >= 0) {
+                        var o = new Scale();
+                        o.Parse(v[i]);
+                        this.objects.push(o);
+                    } else if (v[i].indexOf("skewX") >= 0) {
+                        var o = new SkewX();
+                        o.Parse(v[i]);
+                        this.objects.push(o);
+                    } else if (v[i].indexOf("skewY") >= 0) {
+                        var o = new SkewY();
+                        o.Parse(v[i]);
+                        this.objects.push(o);
+                    } else if (v[i].indexOf("matrix") >= 0) {
+                        console.log("can not support matrix");
+                        this.objects.push(v[i]);
+                    }
+                }
+            }
+
+            this.ToString=function () {
+                var tmp="";
+                for(i=0;i<this.objects.length;i++){
+                    if(this.objects[i]&&this.objects[i].types)
+                        tmp+=this.objects[i].ToString();
+                    else
+                        tmp+=this.objects[i];
+                }
+                return tmp;
+            }
+        }
+
+
+        //理论上多个可以重复并且组合，这里每个最多只允许一个属性存在，方便管理
+
+        // window.onload = function () {
+        //     var isMouseDown = false; //鼠标是否按下
+        //     var mouseDownPosiY;
+        //     var mouseDownPosiX;
+        //     var InitPositionY;
+        //     var InitPositionX;
+        //     var InitHeight;
+        //     var InitWidth;
+        //     var mousedownid; //按下的元素
+        //     coverControlObject = $("#EditCoverDiv");
+        //     $(".nodebo,#MyContent").mousedown(function (e) { //鼠标按下
+        //         e.stopPropagation();
+        //         mouseDownPosiY = e.pageY;
+        //         mouseDownPosiX = e.pageX;
+        //         isMouseDown = true;
+        //         mousedownid = $(this).attr("id");
+        //         InitPositionY = coverControlObject.css("top").replace("px", "");
+        //         InitPositionX = coverControlObject.css("left").replace("px", "");
+        //         InitHeight = coverControlObject.height();
+        //         InitWidth = coverControlObject.width();
+        //         $("#MyContent").addClass("dragMain");
+        //     });
+        //     $(document).mousemove(function (e) { //鼠标移动
+        //         if (isMouseDown) {
+        //             var hh = parseInt(e.pageY) - parseInt(mouseDownPosiY);
+        //             var ww = parseInt(e.pageX) - parseInt(mouseDownPosiX);
+        //             var tempY = hh + parseInt(InitPositionY);
+        //             var tempX = ww + parseInt(InitPositionX);
+        //             switch (mousedownid) //修改元素属性
+        //             {
+        //                 case "topleft":
+        //                     coverControlObject.css({ "top": tempY + "px", "height": parseInt(InitHeight) - 2 - hh + "px", "left": tempX + "px", "width": parseInt(InitWidth) - 2 - ww + "px" });
+        //                     currentControlObject.css({ "top": tempY + "px", "height": parseInt(InitHeight) - hh + "px", "left": tempX + "px", "width": parseInt(InitWidth) - ww + "px" });
+        //                     break;
+        //                 case "topcenter":
+        //                     coverControlObject.css({ "top": tempY + "px", "height": parseInt(InitHeight) - 2 - hh + "px" });
+        //                     currentControlObject.css({ "top": tempY + "px", "height": parseInt(InitHeight) - hh + "px" });
+        //                     break;
+        //                 case "topright":
+        //                     coverControlObject.css({ "top": tempY + "px", "height": parseInt(InitHeight) - 2 - hh + "px", "width": parseInt(InitWidth) - 2 + ww + "px" });
+        //                     currentControlObject.css({ "top": tempY + "px", "height": parseInt(InitHeight) - hh + "px", "width": parseInt(InitWidth) + ww + "px" });
+        //                     break;
+        //                 case "centerleft":
+        //                     coverControlObject.css({ "left": tempX + "px", "width": parseInt(InitWidth) - 2 - ww + "px" });
+        //                     currentControlObject.css({ "left": tempX + "px", "width": parseInt(InitWidth) - ww + "px" });
+        //                     break;
+        //                 case "centerright":
+        //                     coverControlObject.css({ "width": parseInt(InitWidth) - 2 + ww + "px" });
+        //                     currentControlObject.css({ "width": parseInt(InitWidth) + ww + "px" });
+        //                     break;
+        //                 case "bottomleft":
+        //                     coverControlObject.css({ "height": parseInt(InitHeight) - 2 + hh + "px", "left": tempX + "px", "width": parseInt(InitWidth) - 2 - ww + "px" });
+        //                     currentControlObject.css({ "height": parseInt(InitHeight) + hh + "px", "left": tempX + "px", "width": parseInt(InitWidth) - ww + "px" });
+        //                     break;
+        //                 case "bottomcenter":
+        //                     coverControlObject.css("height", parseInt(InitHeight) - 2 + hh + "px");
+        //                     currentControlObject.css("height", parseInt(InitHeight) + hh + "px");
+        //                     break;
+        //                 case "bottomright":
+        //                     coverControlObject.css({ "height": parseInt(InitHeight) - 2 + hh + "px", "width": parseInt(InitWidth) - 2 + ww + "px" });
+        //                     currentControlObject.css({ "height": parseInt(InitHeight) + hh + "px", "width": parseInt(InitWidth) + ww + "px" });
+        //                     break;
+        //                 case "MyContent":
+        //
+        //                     coverControlObject.css("left", tempX + "px").css("top", tempY + "px");
+        //                     // currentControlObject.css("left", tempX + "px").css("top", tempY + "px");
+        //                     // currentControlObject.attr("x", tempX ).css("y", tempY );
+        //                     currentControlObject.attr({"transform":"translate("+ww+", "+hh+")"});
+        //
+        //                     // attrs= currentControlObject.attr("transform");
+        //                     //
+        //                     // if(!attrs)
+        //                     //     attrs="translate(0,0)";
+        //                     // var tv=new TransValues(attrs);
+        //                     // tv.objects[tv.objects.length-1].x=tempX;
+        //                     // tv.objects[tv.objects.length-1].y=tempY;
+        //                     //
+        //                     // currentControlObject.attr("transform",tv.ToString());
+        //
+        //                     break;
+        //             }
+        //
+        //         }
+        //     }).mouseup(function () {
+        //         mousedownid = "";
+        //         isMouseDown = false;
+        //         $("#MyContent").removeClass("dragMain");
+        //
+        //     }).mouseleave(function () {
+        //         mousedownid = "";
+        //         isMouseDown = false;
+        //
+        //     }).mousedown(function () {console.log("click");
+        //         coverControlObject.hide();
+        //     });
+        //     getscole($(".node_scale"));
+        // }
+        //
+        // function getscole(objmodel) {
+        //     var offsetX;
+        //     var offsetY;
+        //     var isMouseDown = false;
+        //     objmodel.mousedown(function (e) { //鼠标按下
+        //         e.stopPropagation();
+        //         offsetX = parseInt(coverControlObject.css('left').replace("px", "")) + parseInt(coverControlObject.css("width").replace("px", "")) / 2;
+        //         offsetY = parseInt(coverControlObject.css('top').replace("px", "")) + parseInt(coverControlObject.css("height").replace("px", "")) / 2;
+        //         isMouseDown = true;
+        //     });
+        //     $(document).mousemove(function (ev) {
+        //         if (isMouseDown) {
+        //             var ox = parseInt(ev.pageX) - parseInt(offsetX);//-$("#mainMenu").width()-$("#menuFile").width()-2*$("#splitFile").width()-$("#codeEditor").width();//计算出鼠标相对于画布中心的位置
+        //             var oy = parseInt(ev.pageY) - parseInt(offsetY);//-$("#topMainMenu").height();
+        //             var to = Math.abs(ox / oy);
+        //
+        //             var angle = Math.atan(to) / (2 * Math.PI) * 360;//鼠标相对于旋转中心的角度
+        //             if (ox < 0 && oy < 0) {
+        //                 angle = -angle;
+        //             } else if (ox < 0 && oy > 0) {
+        //                 angle = -(180 - angle)
+        //             } else if (ox > 0 && oy < 0) {
+        //                 angle = angle;
+        //             } else if (ox > 0 && oy > 0) {
+        //                 angle = 180 - angle;
+        //             }
+        //
+        //
+        //             //绝对路径
+        //
+        //             var rx=parseInt(currentControlObject.attr("x"))+currentControlObjectNative.getBBox().width/2;
+        //             var ry=parseInt(currentControlObject.attr("y"))+currentControlObjectNative.getBBox().height/2;
+        //
+        //             // console.log(currentControlObjectNative.getBBox());
+        //
+        //             //transform路径,因为transform可能是多级别以及多个的，所以这里不支持x、y+transform同时并存的情况，这种情况都用上面情况一并解决
+        //              if(!rx||!ry){
+        //                  //相对路径，
+        //                  rx=coverControlObject.attr("rx");
+        //                  ry=coverControlObject.attr("ry");
+        //              }
+        //
+        //
+        //             coverControlObject.css("transform", "rotate(" + angle + "deg)");
+        //             //currentControlObject.css("transform", "rotate(" + angle + "deg)");
+        //            //currentControlObject.attr("transform", "rotate(" + angle + ","+rx+","+ry+")");
+        //            // ToRoute(currentControlObjectNative,angle);
+        //             attrs= currentControlObject.attr("transform");
+        //             if(!attrs)
+        //                 attrs="rotate(0)";
+        //             var tv=new TransValues(attrs);
+        //             tv.objects[tv.objects.length-1].d=angle;
+        //            tv.objects[tv.objects.length-1].x=rx;
+        //             tv.objects[tv.objects.length-1].y=ry;
+        //
+        //             currentControlObject.attr("transform",tv.ToString());
+        //
+        //
+        //         }
+        //     }).mouseup(function () {
+        //         isMouseDown = false;
+        //     });
+        // }
+
+        document.onmousedown = function(e){
+            if(document.getElementById("selectMouse")){
+                return;
+            }
+            var posx = e.clientX;
+            var posy = e.clientY;
+            var div = document.createElement("div");
+            div.className = "tempDiv";
+            div.id="selectMouse";
+            div.style.left = e.clientX+"px";
+            div.style.top = e.clientY+"px";
+
+            document.body.appendChild(div);
+            document.onmousemove = function(ev){
+                div.style.left = Math.min(ev.clientX, posx) + "px";
+                div.style.top = Math.min(ev.clientY, posy) + "px";
+                div.style.width = Math.abs(posx - ev.clientX)+"px";
+                div.style.height = Math.abs(posy - ev.clientY)+"px";
+                document.onmouseup = function(){
+                   // div.parentNode.removeChild(div);
+                    $("#selectMouse").remove();
+                    document.onmousemove = null;
+                    document.onmouseup = null;
+                }
+            }
+        }
+    </script>
+    <style type="text/css">
+        #EditCoverDiv {
+            width: 200px;
+            height: 100px;
+
+            position: absolute;
+            left: 300px;
+            top:300px;
+
+        }
+        #EditorSelectOver{
+            position: absolute;
+            border:solid 1px rgb(255, 140, 140) ;
+        }
+        .giorns {
+            color: rgb(242, 119, 119);
+        }
+
+        #MyContent {
+
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            border:solid 1px rgb(255, 140, 140) ;
+
+            text-align: center;
+            cursor:move;
+        }
+        .nodebo {
+            border-radius: 4px;
+            width: 4px;
+            height: 4px;
+            background: #fff;
+            position: absolute;
+            border: 1px solid  rgb(245, 100, 100);
+
+        }
+        .node_top_left {
+            left: calc(0px - (4px)/2);
+            top: calc(-4px/2);
+            cursor: nw-resize;
+        }
+        .node_top_center {
+            left: calc(50% - (4px)/2);
+            top: calc(-6px/2);
+            cursor: n-resize;
+        }
+        .node_top_right {
+            right: calc(-8px/2);
+            top: calc(-4px/2);
+            cursor: ne-resize;
+        }
+        .node_center_left {
+            left: calc(-6px/2);
+            top: calc(50% - 4px/2);
+            cursor: w-resize;
+        }
+        .node_center_right {
+            right: calc(-9px/2);
+            top: calc(50% - 4px/2);
+            cursor: e-resize;
+        }
+        .node_bottom_left {
+            left: calc(0px - (6px)/2);
+            bottom: calc(0px - 8px/2);
+            cursor: sw-resize;
+        }
+        .node_bottom_center {
+            left: calc(50% - (4px)/2);
+            bottom: calc(0px - 8px/2);
+            cursor: s-resize;
+        }
+        .node_bottom_right {
+            right: calc(-8px/2);
+            bottom: calc(0px - 8px/2);
+            cursor: se-resize;
+
+        }
+        .node_scale {
+            border-radius: 6px;
+            width: 5px;
+            height: 5px;
+            position: absolute;
+            border: 1px solid #436363;
+            top: -18px;
+            background: #ffffff;
+            left: calc(50% - (4px)/2);
+            cursor: url(images/tr.cur) 10 10,default;
+        }
+        .node_shu {
+            width: 1px;
+            height: 8px;
+            top: -11px;
+            color: #00ffff;
+            background-color: #435a5a;
+            font-weight: bold;
+            text-align: center;
+            left: calc(50% + (1px));
+            position: absolute;
+
+        }
+        .dragMain{
+            background-color: #e8922b2e;
+        }
+    </style>
+</head>
+<body>
+
+
+<div id="LeftMenu">
+<ul id="dhtmlgoodies_tree2" class="dhtmlgoodies_tree">
+
+</ul>
+</div>
+<div id="mainId">
+  <div id="paper" class="paper" style="width: 375px;height: 1000px;position: absolute;left:400px;top:100px;">
+
+  </div>
+
+</div>
+
+<!--------移动信息开始-------->
+
+<div id="pointMenuShow"></div>
+<div id="pointShow"></div>
+
+<div id="EditCoverDiv" style="z-index:10000;display: none;">
+    <div id="MyContent"></div>
+    <div>
+        <div id="topleft" class="nodebo node_top_left"></div>
+        <div id="topcenter" class="nodebo node_top_center"></div>
+        <div id="topright" class="nodebo node_top_right"></div>
+        <div id="centerleft" class="nodebo node_center_left"></div>
+        <div id="centerright" class="nodebo node_center_right"></div>
+        <div id="bottomleft" class="nodebo node_bottom_left"></div>
+        <div id="bottomcenter" class="nodebo node_bottom_center"></div>
+        <div id="bottomright" class="nodebo node_bottom_right"></div>
+        <div class="node_scale"></div>
+        <div class="node_shu"></div>
+    </div>
+</div>
+
+<!--------移动信息结束--------->
+
+
+
+<script type="text/javascript">
+
+    var pointMenuShow=$("#pointMenuShow");
+    var pointObj=$("#pointShow");
+    function $svg(elem,attrs) {
+        var r = document.createElementNS("http://www.w3.org/2000/svg",elem);
+        for(i=0;i<attrs.length;i++){
+            r.setAttribute(attrs[i][0],attrs[i][1]);
+        }
+        return r;
+    }
+
+    /**
+     * 是否在拖拽中..
+     * @type {boolean}
+     */
+    var isInDarging=false;
+
+    function DragSvgElem(obj) {
+        $(obj).mousedown(function(ev) {
+                isInDarging=true;
+            $(obj).css("cursor","move");
+
+            let mouseDownPosiY = ev.pageY;
+            let mouseDownPosiX = ev.pageX;
+            var ev = ev || event;
+
+            if ( obj.setCapture ) {
+                obj.setCapture();
+            }
+            $(obj).attr("fill","red").attr("fill-opacity",0.2);
+
+            document.onmousemove = function(e) {
+                let ev = e || event;
+                let disX = ev.pageX - mouseDownPosiX;
+                let disY = ev.pageY - mouseDownPosiY;
+                let attrs=$(obj).attr("transform");
+                if(!attrs)
+                    attrs="translate(0, 0)";
+                var tv=new TransValues(attrs);
+
+                if(tv.objects[tv.objects.length-1].types!=1){
+                    attrs+="translate(0,0)";
+                }
+
+                tv.objects[tv.objects.length-1].x=disX;
+                tv.objects[tv.objects.length-1].y=disY;
+
+                newId= $(obj).attr("id");
+                newIdG=newId.replace("rect","g");
+                newIdC=newId.split("_")[1];
+                $("#"+newIdG).attr("transform",tv.ToString());
+                $("#"+newIdC).attr("transform",tv.ToString());
+            }
+            document.onmouseup = function(event) {
+                event.stopPropagation();
+                // $(obj).
+                // newId= $(obj).attr("id");
+                // newIdG=newId.replace("rect","g");
+                // newIdC=newId.split("_")[1];
+
+               // $(obj).removeAttr("fill").removeAttr("fill-opacity");
+                document.onmousemove = document.onmouseup = null;
+                isInDarging=false;
+                //释放全局捕获 releaseCapture();
+                if ( obj.releaseCapture ) {
+                    obj.releaseCapture();
+                }
+            }
+            return false;
+        }
+        );
+    }
+
+    function ShowCover(source){
+        let idPre="SC_"+$(source).attr("id")+"_";
+        newId=$(source).attr("id");
+        //控制圈相关
+        let lineColor=["stroke","#00a8ff"];
+        let cR=["r", 4];
+        let cFill=["fill", "#00a8ff"];
+        let baseX=0;
+        let baseY=0;
+        let baseWidth=0;
+        let baseHeight=0;
+
+        let boxs=source.getBBox();
+        baseX=boxs.x;
+        baseWidth=boxs.width;
+        baseY=boxs.y;
+        baseHeight=boxs.height;
+
+        // console.log(realSize);
+        baseTrans=$(source).attr("transform");
+        let g;
+        if(baseTrans){
+            g=$svg("g",
+                [["id", idPre+"g"],
+                    ["transform", baseTrans],
+                    ["width", baseWidth],
+                    ["height", baseHeight],
+                    ["cover", newId]
+                ]);
+        }else
+        {
+            g=$svg("g",
+                [["id", idPre+"g"],
+                    ["width", baseWidth],
+                    ["height", baseHeight],
+                    ["cover", newId]
+                ]);
+        }
+        var r=$svg("rect",
+            [lineColor,
+                ["stroke-dasharray", "3 3"],
+                ["fill", "blue"],
+                ["id", idPre+"rect"],
+                ["x", baseX],
+                ["y",baseY],
+                ["fill-opacity",0.1],
+                ["width", baseWidth],
+                ["height", baseHeight]
+            ]);
+        var ltc=$svg("circle",
+            [lineColor,cFill,["id", idPre+"ltc"],["cx", baseX],["cy", baseY],cR
+            ]);
+        var rtc=$svg("circle",
+            [lineColor,
+                cFill,
+                ["id", idPre+"rtc"],
+                ["cx", baseX+baseWidth],
+                ["cy",baseY],
+                cR
+            ]);
+        var rmc=$svg("circle",
+            [lineColor,
+                cFill,
+                ["id", idPre+"rmc"],
+                ["cx", baseX+baseWidth],
+                ["cy",baseY+baseHeight/2],
+                cR
+            ]);
+        var lbc=$svg("circle",
+            [lineColor,
+                cFill,
+                ["id", idPre+"lbc"],
+                ["cx", baseX],
+                ["cy",baseY+baseHeight],
+                cR
+            ]);
+        var lmc=$svg("circle",
+            [lineColor,
+                cFill,
+                ["id", idPre+"lmc"],
+                ["cx", baseX],
+                ["cy",baseY+baseHeight/2],
+                cR
+            ]);
+        var rbc=$svg("circle",
+            [lineColor,
+                cFill,
+                ["id", idPre+"rbc"],
+                ["cx", baseX+baseWidth],
+                ["cy",baseY+baseHeight],
+                cR
+            ]);
+        var tmc=$svg("circle",
+            [lineColor,
+                cFill,
+                ["id", idPre+"rmc"],
+                ["cx", baseX+baseWidth/2],
+                ["cy",baseY],
+                cR
+            ]);
+        var bmc=$svg("circle",
+            [lineColor,
+                cFill,
+                ["id", idPre+"bmc"],
+                ["cx", baseX+baseWidth/2],
+                ["cy",baseY+baseHeight],
+                cR
+            ]);
+        $(g).append(r);
+        $(g).append(ltc);
+        $(g).append(rtc);
+        $(g).append(tmc);
+        $(g).append(lbc);
+        $(g).append(rbc);
+        $(g).append(rmc);
+        $(g).append(lmc);
+        $(g).append(bmc);
+        $(source).after(g);
+        DragSvgElem(document.getElementById(idPre+"rect"));
+    }
+    $(document).click(function () {
+        $(this).find("g[cover]").each(function () {
+            newId=$(this).attr("cover");
+            $("#"+newId).removeAttr("sct").removeAttr("st").trigger("mouseleave");
+            $(this).remove();
+        });
+    });
+
+    function InitMouseEvent(id){
+       $(id+" *").each(function () {
+           $(this).mouseenter(function (event) {
+               if(isInDarging||$(this).attr("sct")||$(this).attr("lock"))
+                   return;
+               event.stopPropagation();
+               if($(this).attr("stroke")){
+                   $(this).attr("st",$(this).attr("stroke")+"_"+$(this).attr("stroke-width")+"_"+$(this).attr("stroke-dasharray"));
+               }
+               $(this).attr("stroke","#1d79d9");
+               $(this).attr("stroke-width","2");
+               $(this).removeAttr("stroke-dasharray");
+           }).mouseleave(function (event) {
+               if(isInDarging||$(this).attr("sct")||$(this).attr("lock"))
+                   return;
+               event.stopPropagation();
+               //
+               if($(this).attr("st")){
+                   sts=$(this).attr("st").split("_");
+                   $(this).attr("stroke",sts[0]);
+                   if(sts[1]!="undifend")
+                       $(this).attr("stroke-width",sts[1]);
+                   if(sts[2]!="undifend")
+                       $(this).attr("stroke-dasharray",sts[2]);
+               }else{
+                   $(this).removeAttr("stroke");
+                   $(this).removeAttr("stroke-width");
+               }
+           }).click(function (event) {
+               if(isInDarging||$(this).attr("sct")||$(this).attr("lock"))
+                   return;
+               event.stopPropagation();
+               $(this).attr("stroke-width","1");
+               $(this).attr("stroke-dasharray","3,3");
+               // $(this).trigger("mouseleave");
+               let gg=ShowCover(this);
+               $(this).after(gg);
+               $(this).attr("sct","1");
+
+           });
+
+
+
+        //  $(this).mouseenter(function (event) {
+        //      if($(this).attr("lock")){
+        //          return;
+        //      }
+        //      event.stopPropagation();
+        //
+        //
+        //      if($(this).attr("stroke")){
+        //          $(this).attr("st",$(this).attr("stroke"));
+        //      }
+        //      $(this).attr("stroke","#1d79d9");
+        //
+        //
+        //      return;
+        //
+        //     pointObj.css("left",$(this).offset().left);
+        //     pointObj.css("top",$(this).offset().top);
+        //     pointObj.css("width",this.getBBox().width);
+        //     pointObj.css("height",this.getBBox().height);
+        //     attrs=$(this).attr("transform");
+        //     if(attrs&&attrs.indexOf("rotate")>=0){
+        //         var tv=new TransValues(attrs);
+        //         for(k=0;k<tv.objects.length;k++){
+        //             if(tv.objects[k].types==2){
+        //                 pointObj.css("transform","rotate("+tv.objects[k].d+"deg)");
+        //             }
+        //         }
+        //     }else{
+        //         pointObj.css("transform","rotate(0deg)");
+        //     }
+        //     pointObj.show();
+        //
+        //     menuObj=$("#ml_"+$(this).attr("id"));
+        //
+        //     if(menuObj)
+        //     {
+        //       //  console.log(menuObj);
+        //         pointMenuShow.css("left",menuObj.offset().left);
+        //         pointMenuShow.css("top",menuObj.offset().top);
+        //         pointMenuShow.css("width",menuObj.width());
+        //         pointMenuShow.css("height",menuObj.height());
+        //         pointMenuShow.show();
+        //     }
+        //
+        // });
+        //
+        // $(this).mouseleave(function (event) {
+        //     if($(this).attr("lock")){
+        //         return;
+        //     }
+        //     event.stopPropagation();
+        //
+        //   //
+        //     if($(this).attr("st")){
+        //         $(this).attr("stroke",$(this).attr("st"));
+        //     }else{
+        //         $(this).removeAttr("stroke");
+        //     }
+        //
+        //     return;//
+        //
+        //     pointObj.hide();
+        //     pointMenuShow.hide();
+        //
+        // });
+        //
+        //  $(this).bind("click", function (event) {
+        //      if($(this).attr("lock")){
+        //          return;
+        //      }
+        //      event.stopPropagation();
+        //      //第一次来就记录在这里
+        //      if(coverControlObject.attr("rid")!=$(this).attr("id")){
+        //          currentMainSvg=document.getElementById(id.replace("#",""));
+        //          x=$(this).offset().left;
+        //          x=x-$(currentMainSvg).offset().left;
+        //          x=x+this.getBBox().width/2;
+        //
+        //          y=$(this).offset().top;
+        //          y=y-$(currentMainSvg).offset().top;
+        //          y=y+this.getBBox().height/2;
+        //
+        //
+        //
+        //          console.log("x:"+x+" Y:"+y);
+        //          coverControlObject.attr("rid",$(this).attr("id"));
+        //          coverControlObject.attr("rx",x);
+        //          coverControlObject.attr("ry",y);
+        //
+        //      }else{
+        //          return;
+        //      }
+        //
+        //       // $(this).SetControl();
+        //      //设置一个div可以被控制编辑
+        //      currentControlObject = $(this);
+        //      currentControlObjectNative= this;
+        //
+        //      var jq = coverControlObject;
+        //
+        //     // coverControlObject.css("transform", currentControlObject.attr("transform"));
+        //      attrs=currentControlObject.attr("transform");
+        //
+        //      if(attrs&&attrs.indexOf("rotate")>=0){
+        //          var tv=new TransValues(attrs);
+        //          for(k=0;k<tv.objects.length;k++){
+        //              if(tv.objects[k].types==2){
+        //                  coverControlObject.css("transform","rotate("+tv.objects[k].d+"deg)");
+        //                  coverControlObject.css("transform-origin",tv.objects[k].x+"px "+tv.objects[k].y+"px");
+        //              }
+        //          }
+        //      }else{
+        //          pointObj.css("transform","rotate(0deg)");
+        //      }
+        //
+        //
+        //      jq.css("height", this.getBBox().height);
+        //      jq.css("width",this.getBBox().width);
+        //      jq.css("left", $(this).offset().left);
+        //      jq.css("top", $(this).offset().top);
+        //      jq.show();
+        //  });
+
+      });
+
+        $("#LeftMenu li").each(function () {
+
+            $(this).mouseenter(function (event) {
+
+               // $(this).css("background-color","#cccccc");
+                id2=$(this).attr("id").replace("ml_","");
+                svgObj=$("#"+id2);
+
+                if(svgObj&&svgObj.attr("lock")){
+                    return;
+                }
+                event.stopPropagation();
+                if(svgObj)
+                {
+                    sObj=document.getElementById(id2);
+                    if(!sObj||!sObj.getBBox)
+                        return;
+                    pointObj.css("left",svgObj.offset().left);
+                    pointObj.css("top",svgObj.offset().top);
+                    pointObj.css("width",sObj.getBBox().width);
+                    pointObj.css("height",sObj.getBBox().height);
+                    pointObj.show();
+                }
+                    pointMenuShow.css("left",$(this).offset().left);
+                    pointMenuShow.css("top",$(this).offset().top);
+                    pointMenuShow.css("width",$(this).width());
+                    pointMenuShow.css("height",$(this).height());
+                    pointMenuShow.show();
+            });
+            $(this).mouseleave(function (event) {
+                id2=$(this).attr("id").replace("ml_","");
+                svgObj=$("#"+id2)
+                if(svgObj&&svgObj.attr("lock")){
+                    return;
+                }
+                //$(this).css("background-color","#f7f7f7");
+                event.stopPropagation();
+                pointObj.hide();
+                pointMenuShow.hide();
+            });
+            $(this).bind("click", function (event) {
+
+
+
+                //设置一个div可以被控制编辑
+                id2=$(this).attr("id").replace("ml_","");
+                currentControlObject = $("#"+id2);
+                svgObj=$("#"+id2)
+                if(svgObj&&svgObj.attr("lock")){
+                    return;
+                }
+                event.stopPropagation();
+
+
+                currentControlObjectNative= document.getElementById(id2);
+
+                thats=document.getElementById(id2);
+                //第一次来就记录在这里
+                if(coverControlObject.attr("rid")!=$(this).attr("id")){
+                    currentMainSvg=document.getElementById(id.replace("#",""));
+                    x=$(thats).offset().left;
+                    x=x-$(currentMainSvg).offset().left;
+                    x=x+thats.getBBox().width/2;
+
+                    y=$(thats).offset().top;
+                    y=y-$(currentMainSvg).offset().top;
+                    y=y+thats.getBBox().height/2;
+
+                    coverControlObject.attr("rid",$(this).attr("id").replace("ml_",""));
+                    coverControlObject.attr("rx",x);
+                    coverControlObject.attr("ry",y);
+
+                }else{
+                    return;
+                }
+
+
+                var jq = coverControlObject;
+                coverControlObject.css("transform", currentControlObject.css("transform"));
+
+              if(thats&&thats.getBBox){
+                jq.css("height", thats.getBBox().height);
+                jq.css("width",thats.getBBox().width);
+                jq.css("left", $(thats).offset().left);
+                jq.css("top", $(thats).offset().top);
+                jq.show();
+               }
+            });
+
+        });
+
+
+    }
+
+
+    var publicId=0;
+    function GetId() {
+        var idTemp=(new Date()).getTime();
+        if(idTemp<=publicId)
+            publicId++;
+        else
+            publicId= idTemp;
+        return publicId;
+    }
+
+    const BFS = {
+        nodes: [],
+        do (roots) {
+            var roots = new Array(...roots);
+            for (let i = 0;i < roots.length;i++) {
+                var root = roots[i];
+                // 过滤 text 节点、script 节点
+                if ((root.nodeType != 3) && (root.nodeName != 'SCRIPT')) {
+                    if (root.childNodes.length) roots.push(...root.childNodes);
+                    this.nodes.push(root);
+                }
+            }
+            return this.nodes;
+        }
+    }
+
+
+
+    function CacheDom(id) {
+        var svgNodes=BFS.do(document.getElementById(id).childNodes);
+        var menuNodes=[];
+        var topMenuNode=null;
+        var lastMenuNode=null;
+        for(i=0;i<svgNodes.length;i++){
+            if(i==0){
+                var title=$("#"+id).find("title");
+                if(title&&title.length>0)
+                    title=title[0].innerHTML;
+                else
+                    title="page-"+svgNodes[i].id;
+                topMenuNode=lastMenuNode=$('<li id="ml_'+svgNodes[i].id+'" class="fa'+$(svgNodes[i]).attr("icon")+'" page="true"><a id="ma_'+svgNodes[i].id+'" href=\"#\">'+title+'</a><ul id="mu_'+svgNodes[i].id+'"></ul></li>');
+                lastMenuNode=lastMenuNode.find("#mu_"+svgNodes[i].id);
+            }else{
+                if(svgNodes[i].parentNode!=svgNodes[i-1]){
+                    for(k=i;k>=0;k--){
+                        if( svgNodes[i].parentNode==svgNodes[k-1])
+                        {lastMenuNode=topMenuNode.find("#mu_"+svgNodes[k-1].id);
+                            break; }}
+                }
+
+                newid=svgNodes[i].id;
+                if (newid)newid=newid.slice(8);
+                text2=$(svgNodes[i])[0].tagName+' '+newid;
+                if($(svgNodes[i])[0].tagName=="tspan")
+                    text2=svgNodes[i].innerHTML;
+                else if($(svgNodes[i])[0].tagName=="g")
+                    text2="编组 "+newid;
+
+                if(text2.length>15)
+                    text2=text2.slice(0,14)+"...";
+                if(svgNodes[i].childNodes.length>1){
+                    lastMenuNode.prepend('<li id="ml_'+svgNodes[i].id+'" class="fa'+$(svgNodes[i]).attr("icon")+'"><a id="ma_'+svgNodes[i].id+'" href=\"#\">'+text2+'</a><ul id="mu_'+svgNodes[i].id+'"></ul></li>');//.appendTo(lastMenuNode);
+                    lastMenuNode=lastMenuNode.find("#mu_"+svgNodes[i].id);
+                }else{
+                    if(svgNodes[i].nodeType==8){
+                        var strs=svgNodes[i].nodeValue;//slice
+                        if(strs.length>19)strs=strs.slice(0,19)+"...";
+                        lastMenuNode.prepend('<li id="ml_'+svgNodes[i].id+'" class="fa-code"><a id="ma_'+svgNodes[i].id+'" href="#">'+strs+'</a></li>');//.appendTo(lastMenuNode);
+                    }else {
+                        lastMenuNode.prepend('<li id="ml_'+svgNodes[i].id+'" class="fa'+$(svgNodes[i]).attr("icon")+'"><a id="ma_'+svgNodes[i].id+'" href=\"#\">'+text2+'</a></li>');//.appendTo(lastMenuNode);
+
+                    }
+                    // 不要了，还是上级lastMenuNode=lastMenuNode.find("#ml_"+svgNodes[i].id);
+                }
+
+            }
+        }
+
+        $("#dhtmlgoodies_tree2").append(topMenuNode);
+
+
+    }
+
+
+
+
+    function GetIcon(tagName) {
+        tagName=tagName.toLowerCase().trim();
+       if(tagName=="g")
+           return "-clone";//
+       else if(tagName=="rect")
+           return "-square-o";
+       else if(tagName=="circle")
+           return "-circle-o";
+       else if(tagName=="text")
+           return "-text-width";
+       else if(tagName=="tspan")
+           return "-font";
+       else if(tagName=="path")
+           return "-lemon-o";
+       else if(tagName=="title")
+           return "-fa-wpforms";
+       else if(tagName=="desc")
+           return "-paint-brush";
+       else if(tagName=="polygon")
+           return "-star-o";
+       else if(tagName=="use")
+           return "-link";
+       else if(tagName=="mask")
+           return "-snapchat-square";
+       else if(tagName=="defs")
+           return "-object-group";
+       else if(tagName=="svg")
+           return "-codepen";
+       else if(tagName=="line")
+           return "-minus";
+       else
+           return "-"+tagName;
+
+    }
+
+    function InitSvgId(svgObj) {
+
+        //due mask
+        svgObj.find("[mask]").each(function (i,n) {
+          var obj=$(this);
+          targetId=$(this).attr("mask");
+           targetId=targetId.substring(targetId.indexOf('#'),(targetId.indexOf(')')));
+           newId=GetId();
+           if($(targetId)&&$(targetId).attr("icon")==null){
+               $(targetId).attr("icon",GetIcon($(targetId)[0].tagName));
+               $(targetId).attr("id",newId);
+               $(this).attr("mask","url(#"+newId+")");
+           }
+       });
+       //due use
+        svgObj.find("use").each(function (i,n) {
+            var obj=$(this);
+            targetId=$(this).attr("xlink:href");
+            newId=GetId();
+            if($(targetId)&&$(targetId).attr("icon")==null){
+                $(targetId).attr("icon",GetIcon($(targetId)[0].tagName));
+                $(targetId).attr("id",newId);
+                $(this).attr("xlink:href","#"+newId+"");
+            }
+        });
+
+        //
+        svgObj.find("*").each(function (i,n) {
+            if($(this)&&$(this).attr("icon")==null){
+                $(this).attr("id",GetId());
+                $(this).attr("icon",GetIcon($(this)[0].tagName));
+            }
+        });
+    }
+
+
+
+    function LoadSvg(url,id){
+        var ajax = new XMLHttpRequest();
+        ajax.open('GET', url, true);
+        ajax.send();
+        ajax.onload = function(e) {
+            //create svg object
+            $("#"+id).html(ajax.responseText);
+            //if have not give you init svg,here save,and need save,then next time load it will init nothing
+            InitSvgId($("#"+id));
+
+
+            CacheDom(id);
+            InitMouseEvent("#"+id);
+           // svgid=$("#id").find("svg")[0].attr("id");
+
+
+            treeObj = new JSDragDropTree();
+            treeObj.setTreeId('dhtmlgoodies_tree2');
+            treeObj.setMaximumDepth(10);
+            treeObj.setMessageMaximumDepthReached('Maximum depth reached'); // If you want to show a message when maximum depth is reached, i.e. on drop.
+            treeObj.initTree();
+            treeObj.collapseAll()
+           // treeObj.expandAll();
+            $("#dhtmlgoodies_tree2").find("[page='true']").each(function () {
+                $(this).find("i:first").trigger("click");
+            });
+        }
+    }
+
+    LoadSvg("data/t.svg","paper");
+
+
+
+
+
+
+</script>
+<a href="#" onclick="treeObj.collapseAll()">Collapse all</a> |
+<a href="#" onclick="treeObj.expandAll()">Expand all</a>
+
+
+
+
+
+</body>
+</html>

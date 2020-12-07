@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>basicContext.js - 强大的纯Js上下文菜单插件|DEMO2_jQuery之家-自由分享jQuery、html5、css3的插件库</title>
+	<link rel="stylesheet" type="text/css" href="css/normalize.css" />
+	<link rel="stylesheet" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+	<link rel="stylesheet" type="text/css" href="css/htmleaf-demo.css">
+	<link rel="stylesheet" href="dist/basicContext.min.css">
+	<link rel="stylesheet" href="dist/themes/default.min.css">
+	<style>
+		html {
+			width: 100%;
+			height: 100%;
+		}
+
+		body {
+			text-align: center;
+			min-height: 100%;
+			font-size: 14px;
+		}
+
+		.htmleaf-content a {
+			display: inline-block;
+			position: absolute;
+			margin: 5px;
+			padding: 6px 10px;
+			background: #4393e6;
+			color: #fff;
+			text-decoration: none;
+			border-radius: 3px;
+			-moz-user-select: none;
+			-webkit-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
+		.htmleaf-content a.topleft {
+			top: 0;
+			left: 0;
+		}
+
+		.htmleaf-content a.topright {
+			top: 0;
+			right: 0;
+		}
+
+		.htmleaf-content a.bottomleft {
+			bottom: 0;
+			left: 0;
+		}
+
+		.htmleaf-content a.bottomright {
+			bottom: 0;
+			right: 0;
+		}
+
+		.htmleaf-content a.center {
+			top: 50%;
+			left: 50%;
+			-webkit-transform: translate(-50%, -50%);
+			transform: translate(-50%, -50%);
+		}
+
+	</style>
+</head>
+<body>
+
+<li id="node0" noDrag="true" noSiblings="true" noDelete="true" noRename="true"><a href="#">Root node</a>
+	<ul>
+		<li id="node1"><a href="#">Europe</a>
+			<ul>
+				<li id="node2" noDelete="true"><a href="#">Norway</a>
+					<ul>
+						<li id="node3" noRename="true"><a href="#">Stavanger</a></li>
+						<li id="node6"><a href="#">Bergen</a></li>
+						<li id="node7"><a href="#">Oslo</a></li>
+					</ul>
+				</li>
+				<li id="node8"><a href="#">United Kingdom</a>
+					<ul>
+						<li id="node9"><a href="#">London</a></li>
+						<li id="node10"><a href="#">Manchester</a></li>
+					</ul>
+				</li>
+				<li id="node12"><a href="#">Sweden</a></li>
+				<li id="node13"><a href="#">Denmark</a></li>
+				<li id="node14" class="fa-diamond"><a href="#">Germany</a>
+					<ul>
+						<li id="node141" class="fa-joomla"><a href="#">Berlin</a>
+						<li id="node142" class="fa-first-order"><a href="#">Munich</a>
+						<li id="node143" class="fa-gg"><a href="#">newclass</a>
+					</ul>
+				</li>
+			</ul>
+		</li>
+		<li id="node15"><a href="#">Asia</a>
+			<ul>
+				<li id="node151" class="fa-text-width"><a href="#">Japan</a>
+				<li id="node152" class="fa-map-o"><a href="#">China</a>
+				<li id="node153" class="fa-cubes"><a href="#">Indonesia</a>
+			</ul>
+		</li>
+		<li id="node16" class="fa-registered"><a href="#">Africa</a>
+			<ul>
+				<li id="node17" class="fa-laptop"><a href="#">Tanzania</a></li>
+				<li id="node18" class="fa-commenting-o"><a href="#">Kenya</a></li>
+			</ul>
+		</li>
+		<li id="node19"><a href="#">America</a>
+			<ul>
+				<li id="node20"><a href="#">Canada</a></li>
+				<li id="node21"><a href="#">United States</a></li>
+				<li id="node22"><a href="#">Mexico</a></li>
+				<li id="node23"><a href="#">Argentina</a></li>
+			</ul>
+		</li>
+		<li id="node24" noChildren="true"><a href="#">Cannot have children</a></li>
+		<li id="node25" noDrag="true"><a href="#">Cannot be dragged</a></li>
+	</ul>
+</li>
+
+<li id="node36" noDrag="true" noSiblings="true" noDelete="true" noRename="true"><a href="#">Root node2</a>
+	<ul>
+		<li id="node111"><a href="#">Europe</a>
+			<ul>
+				<li id="node211" noDelete="true"><a href="#">Norway</a>
+					<ul>
+						<li id="node311" noRename="true"><a href="#">Stavanger</a></li>
+						<li id="node1168"><a href="#">uuuuuuu</a>
+							<ul>
+								<li id="node3121" noRename="true"><a href="#">eftt</a></li>
+								<li id="node3113" noRename="true"><a href="#">ggggggg</a></li>
+
+							</ul>
+						</li>
+						<li id="node711"><a href="#">Oslo</a></li>
+					</ul>
+				</li>
+				<li id="node8"><a href="#">United Kingdom</a>
+					<ul>
+						<li id="node911"><a href="#">London</a></li>
+						<li id="node1011"><a href="#">Manchester</a></li>
+					</ul>
+				</li>
+				<li id="node1211"><a href="#">Sweden</a></li>
+				<li id="node1311"><a href="#">Denmark</a></li>
+				<li id="node1411" class="fa-diamond"><a href="#">Germany</a>
+					<ul>
+						<li id="node141" class="fa-joomla"><a href="#">Berlin</a>
+						<li id="node142" class="fa-first-order"><a href="#">Munich</a>
+						<li id="node143" class="fa-gg"><a href="#">newclass</a>
+					</ul>
+				</li>
+			</ul>
+		</li>
+		<li id="node1511"><a href="#">Asia</a>
+			<ul>
+				<li id="node15111" class="fa-text-width"><a href="#">Japan</a>
+				<li id="node15211" class="fa-map-o"><a href="#">China</a>
+				<li id="node15311" class="fa-cubes"><a href="#">Indonesia</a>
+			</ul>
+		</li>
+		<li id="node1611" class="fa-registered"><a href="#">Africa</a>
+			<ul>
+				<li id="node1711" class="fa-laptop"><a href="#">Tanzania</a></li>
+				<li id="node1811" class="fa-commenting-o"><a href="#">Kenya</a></li>
+			</ul>
+		</li>
+		<li id="node1119"><a href="#">America</a>
+			<ul>
+				<li id="node20"><a href="#">Canada</a></li>
+				<li id="node21"><a href="#">United States</a></li>
+				<li id="node22"><a href="#">Mexico</a></li>
+				<li id="node23"><a href="#">Argentina</a></li>
+			</ul>
+		</li>
+		<li id="node2411" noChildren="true"><a href="#">Cannot have children</a></li>
+		<li id="node2511" noDrag="true"><a href="#">Cannot be dragged</a></li>
+	</ul>
+</li>
+
+
+
+
+
+<div class="htmleaf-container">
+		<header class="htmleaf-header">
+			<h1>basicContext.js - 强大的纯Js上下文菜单插件 <span>Easy-to-use context-menu for your website or webapp</span></h1>
+			<div class="htmleaf-links">
+				<a class="htmleaf-icon icon-htmleaf-home-outline" href="http://www.htmleaf.com/" title="jQuery之家" target="_blank"><span> jQuery之家</span></a>
+				<a class="htmleaf-icon icon-htmleaf-arrow-forward-outline" href="http://www.htmleaf.com/jQuery/Menu-Navigation/201701074307.html" title="返回下载页" target="_blank"><span> 返回下载页</span></a>
+			</div>
+			<div class="htmleaf-demo center">
+			  <a href="index.html">default</a>
+			  <a href="index2.html"  class="current">position</a>
+			  <a href="index3.html">scroll</a>
+			  <a href="index4.html">closeFunction</a>
+			  <a href="index5.html">customPosition</a>
+			  <a href="index6.html">jQuery</a>
+			</div>
+		</header>
+		<div class="htmleaf-content">
+			<a href="#" class="topleft">Click me!</a>
+
+			<a href="#" class="topright">Click me!</a>
+
+			<a href="#" class="bottomleft">Click me!</a>
+
+			<a href="#" class="bottomright">Click me!</a>
+
+			<a href="#" class="center">Click me!</a>
+		</div>
+		<div class="related">
+		    <h3>如果你喜欢这个插件，那么你可能也喜欢:</h3>
+		    <a href="http://www.htmleaf.com/jQuery/Menu-Navigation/201609043956.html">
+			  <img src="related/1.jpg" width="300" alt="仿Key社游戏风格jQuery右键菜单"/>
+			  <h3>仿Key社游戏风格jQuery右键菜单</h3>
+			</a>
+			<a href="http://www.htmleaf.com/jQuery/Menu-Navigation/201607193750.html">
+			  <img src="related/2.jpg" width="300" alt="纯JavaScript右键上下文菜单插件"/>
+			  <h3>纯JavaScript右键上下文菜单插件</h3>
+			</a>
+		</div>
+	</div>
+	
+	<script src="dist/basicContext.min.js"></script>
+	<script>
+
+		var onClick = function(e) {
+
+			var clicked = function() { alert('Item clicked!') }
+
+			var items = [
+				{ title: 'Add Sites', icon: 'ion-plus-round', fn: clicked },
+				{ title: 'Reset Login', icon: 'ion-person', fn: clicked },
+				{ title: 'Help', icon: 'ion-help-buoy', fn: clicked },
+				{ title: 'Disabled', icon: 'ion-minus-circled', fn: clicked, disabled: true },
+				{ title: 'Invisible', icon: 'ion-eye-disabled', fn: clicked, visible: false },
+				{ },
+				{ title: 'Logout', icon: 'ion-log-out', fn: clicked }
+			]
+
+			basicContext.show(items, e)
+
+		}
+
+		document.addEventListener('DOMContentLoaded', function() {
+
+			document.querySelector('a.topleft').addEventListener('click', onClick)
+			document.querySelector('a.topright').addEventListener('click', onClick)
+			document.querySelector('a.bottomleft').addEventListener('click', onClick)
+			document.querySelector('a.bottomright').addEventListener('click', onClick)
+
+			document.querySelector('a.center').addEventListener('click', onClick)
+
+		})
+
+	</script>
+</body>
+</html>

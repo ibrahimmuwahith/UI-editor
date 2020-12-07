@@ -1,0 +1,542 @@
+.dhtmlgoodies_tree img{
+    border:0px;
+    width: 16px;
+    height: 16px;
+}
+#LeftMenu{
+    background-color: #f7f7f7;
+    border-right: solid 1px #e8e8e8;
+    width: 280px;
+    height: 100%;
+    min-height: 1500px;
+
+
+
+    position:fixed;
+    top:0;
+    left:0;
+
+
+}
+
+#RightMenu{
+    background-color: #2f2f2c;
+    border-left: solid 1px #2f2f2c;
+    width: 280px;
+    height: 100%;
+    min-height: 1500px;
+    position:fixed;
+    top:0;
+    right:0;
+    padding: 0 0 0 5px
+}
+
+.fa.ind1{
+    width: 200px;
+    height: 30px;
+    border: solid 1px #1d79d9;
+}
+.fa.ind2{
+    width: 80px;
+    height: 30px;
+    color:red;
+    background-image: url(images/aw.svg);
+    background-position: 0% 50%;
+    background-size: 55px 15px;
+    background-repeat: no-repeat; /*??repeat-x,y?*/
+}
+#mainId{
+    width: 1000px;
+    height: 1000px;
+    overflow: scroll;
+}
+.page{
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+.fa{
+    color:#1e9fff;
+
+}
+i.fa-angle-right{
+    font-size: 16px;
+
+    width: 20px;
+}
+
+i.fa-angle-down{
+    color: #272727;
+    font-size: 16px;
+    width: 20px;
+}
+#pointShow{
+    border:solid 1px #1E9FFF;
+    position: absolute;
+    width: 500px;
+    height: 300px;
+    border-radius: 3px;
+    display: none;
+    /*这里特别重要，避免由于本层遮挡导致的闪烁*/
+    pointer-events: none;
+}
+#pointMenuShow{
+    border:solid 1px #cccccc;
+    position: absolute;
+    width: 500px;
+    height: 300px;
+    border-radius: 3px;
+    display: none;
+    /*这里特别重要，避免闪烁*/
+    pointer-events: none;
+}
+
+/*选取层*/
+.tempDiv{
+    border:1px dashed blue;
+    background:#5a72f8;
+    position:absolute;
+    width:0;
+    height:0;
+    filter:alpha(opacity:10);
+    opacity:0.1
+}
+
+#EditCoverDiv {
+    width: 200px;
+    height: 100px;
+
+    position: absolute;
+    left: 300px;
+    top:300px;
+
+}
+#EditorSelectOver{
+    position: absolute;
+    border:solid 1px rgb(255, 140, 140) ;
+}
+.giorns {
+    color: rgb(242, 119, 119);
+}
+
+#MyContent {
+
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    border:solid 1px rgb(255, 140, 140) ;
+
+    text-align: center;
+    cursor:move;
+}
+.nodebo {
+    border-radius: 4px;
+    width: 4px;
+    height: 4px;
+    background: #fff;
+    position: absolute;
+    border: 1px solid  rgb(245, 100, 100);
+
+}
+.node_top_left {
+    left: calc(0px - (4px)/2);
+    top: calc(-4px/2);
+    cursor: nw-resize;
+}
+.node_top_center {
+    left: calc(50% - (4px)/2);
+    top: calc(-6px/2);
+    cursor: n-resize;
+}
+.node_top_right {
+    right: calc(-8px/2);
+    top: calc(-4px/2);
+    cursor: ne-resize;
+}
+.node_center_left {
+    left: calc(-6px/2);
+    top: calc(50% - 4px/2);
+    cursor: w-resize;
+}
+.node_center_right {
+    right: calc(-9px/2);
+    top: calc(50% - 4px/2);
+    cursor: e-resize;
+}
+.node_bottom_left {
+    left: calc(0px - (6px)/2);
+    bottom: calc(0px - 8px/2);
+    cursor: sw-resize;
+}
+.node_bottom_center {
+    left: calc(50% - (4px)/2);
+    bottom: calc(0px - 8px/2);
+    cursor: s-resize;
+}
+.node_bottom_right {
+    right: calc(-8px/2);
+    bottom: calc(0px - 8px/2);
+    cursor: se-resize;
+
+}
+.node_scale {
+    border-radius: 6px;
+    width: 5px;
+    height: 5px;
+    position: absolute;
+    border: 1px solid #436363;
+    top: -18px;
+    background: #ffffff;
+    left: calc(50% - (4px)/2);
+    cursor: url(images/tr.cur) 10 10,default;
+}
+.node_shu {
+    width: 1px;
+    height: 8px;
+    top: -11px;
+    color: #00ffff;
+    background-color: #435a5a;
+    font-weight: bold;
+    text-align: center;
+    left: calc(50% + (1px));
+    position: absolute;
+
+}
+.dragMain{
+    background-color: #e8922b2e;
+}
+
+/* New added stuff */
+
+.draginput {
+    background: #3f3f3c;
+    border-radius: 3px;
+    -webkit-font-smoothing: antialiased;
+    width: 70px;
+    height: 70px;
+    display: block;
+    position: relative;
+    float: left;
+    margin: 0 5px 5px 0;
+  }
+
+  .draginput input {
+    border: none;
+    background: transparent;
+    font: 24px/normal sans-serif;
+    text-align: center;
+    color: #4F80FF;
+    padding: 30px 0 16px;
+    width: 100%;
+    height: 24px;
+    position: relative;
+    z-index: 2;
+  }
+  .draginput input[readonly=readonly] {
+    -webkit-appearance: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  .draginput input, .draginput input:hover, .draginput input:active {  
+    cursor: url(../images/drag.png), move;
+    cursor: -webkit-grab;
+    cursor: -moz-grab;
+}
+body {
+    background: #3f3f3c;
+    font: 13px/120% 'Lucida Sans', 'Lucida Grande', 'Lucida Sans Unicode', sans-serif;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    margin: 0;
+    padding: 0;
+  }  
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+    background: #444;
+}
+::-webkit-scrollbar-corner {
+    background: #444;
+  }
+  ::-webkit-scrollbar-track {
+    border-radius: 10px;
+    background: #444;
+}
+::selection {background: #000; color: #fff;} 
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: #666;
+}
+.align_buttons  .draginput_cell:nth-child(1) {border-radius: 3px 0 0 0;}
+ .align_buttons  .draginput_cell:nth-child(3) {border-radius: 0 3px 0 0;}
+ .align_buttons  .draginput_cell:nth-child(4) {border-radius: 0 0 0 3px;}
+ .align_buttons  .draginput_cell:nth-child(6) {border-radius: 0 0 3px 0;}
+
+.align_buttons .push_button {
+  display: block;
+  float: left;
+}
+.draginput label {
+    margin: 28px 10px 0 5px;
+    font-size: 14px;
+    color: white;
+    font-weight: bold;
+    font-family: sans-serif;
+  }
+  
+
+  .draginput select {
+    -webkit-appearance: none;
+    opacity: 0;
+    display: block;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    z-index: 1;
+    top: 0;
+    left: 0;  
+  }
+
+
+  .draginput {
+    background: #3f3f3c;
+    border-radius: 3px;
+    -webkit-font-smoothing: antialiased;
+    width: 70px;
+    height: 70px;
+    display: block;
+    position: relative;
+    float: left;
+    margin: 0 5px 5px 0;
+  }
+  
+   .draginput .caret {
+    border: solid transparent 5px;
+    border-top-color: #999;
+    position: absolute;
+    width: 0;
+    height: 0;
+    right: 5px;
+    margin-top: -2px;
+    top: 50%;
+  }
+  
+   .draginput label {
+    margin: 28px 10px 0 5px;
+    font-size: 14px;
+    color: white;
+    font-weight: bold;
+    font-family: sans-serif;
+  }
+  
+   .draginput label#resolution_label,  .draginput label#seg_type_label {
+    font: bold 12px/110% sans-serif;
+    position: absolute;
+    left: auto;
+    right: 10px;
+    z-index: 0;
+    text-align: right;
+  }
+  
+    .draginput label#seg_type_label {
+    margin-top: 40px;
+  }
+  
+    .draginput label#seg_type_label .caret {
+    top: 66%;
+  }
+  
+   .draginput label#resolution_label .pull {
+    position: relative;
+    left: -15px;
+  }
+  
+   .draginput label#resolution_label span {
+    right: -13px;
+    left: auto;
+    font-size: 16px;
+    top: 2px;
+    font-weight: bold;
+    color: white;
+  }
+  
+  .touch  .draginput.active:after {
+    content: attr(data-value);
+    display: block;
+    position: absolute;
+    background: #fff;
+    font-size: 16px;
+    top: 0;
+    width: 30px;
+    left: -50px;
+    padding: 0 5px;
+    color: #333;
+    z-index: 10;
+    font-family: sans-serif;
+    font-weight: bold;
+    text-align: right;
+    padding-right: 10px;
+    height: 20px;
+    line-height: 20px;
+    letter-spacing: -1px;
+  }
+  
+  .touch  .draginput.active:before {
+    content: '';
+    height: 0;
+    width: 0;
+    position: absolute;
+    top: 5px;
+    left: -5px;
+    border: solid transparent 5px;
+    border-left-color: #fff;
+  }
+  
+   .draginput input {
+    border: none;
+    background: transparent;
+    font: 24px/normal sans-serif;
+    text-align: center;
+    color: #4F80FF;
+    padding: 30px 0 16px;
+    width: 100%;
+    height: 24px;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .draginput.twocol {
+    width: 145px;
+  }
+  
+  
+  
+  .draginput input, .draginput input:hover, .draginput input:active {  
+      cursor: url(../images/drag.png), move;
+      cursor: -webkit-grab;
+      cursor: -moz-grab;
+  }
+  
+  .draginput input[type="checkbox"], .draginput input[type="checkbox"]:hover, .draginput input[type="checkbox"]:active {  
+      cursor: pointer;
+  }
+  
+  .draginput.checkbox {
+    cursor: pointer;
+  }
+  
+  .draginput.active input, .draginput.active input:hover, .draginput.active input:active {  
+      cursor: url(../images/dragging.png), move;
+      cursor: -webkit-grabbing;
+      cursor: -moz-grabbing;
+  }
+  
+  
+  
+   .draginput span {
+    font: 11px/130% sans-serif;
+    color: #ccc;
+    display: block;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    text-align: left;
+  }
+  
+   .draginput.error {
+    background: #900;
+  }
+  
+   .draginput.error input {
+    color: #fff;
+  }
+  
+   .draginput.stroke_tool {
+    text-align: center;
+  }
+  
+   .draginput select {
+    -webkit-appearance: none;
+    opacity: 0;
+    display: block;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    z-index: 1;
+    top: 0;
+    left: 0;  
+  }
+  
+  
+  .draginput_cursor{
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    border-top: solid rgba(50,100,200,0.25) 3px;
+    margin-top: -2px;
+    z-index: 0;
+  }
+  
+   .draginput input[readonly=readonly] {
+    -webkit-appearance: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  
+  
+   .draginput input:focus {
+    background: #50A0FF;
+    color: #fff;
+    outline: none;
+    box-shadow: 0 0 5px 2px #50A0FF;
+  }
+  
+   .draginput input:focus+span {
+    z-index: 10;
+    color:#fff;
+  }
+  
+  .draginput .push_bottom {
+    bottom: 0;
+    position: absolute;
+  }
+
+  .clearfix:before,
+.clearfix:after {
+    content:"";
+    display:table;
+}
+
+.clearfix:after {
+    clear:both;
+}
+
+/* For IE 6/7 (trigger hasLayout) */
+.clearfix {
+    *zoom:1;
+}
+#tools_top h4 {
+    color: #fff;
+    font-weight: normal;
+    margin: 0;
+    padding: 10px 0 5px 0;
+  }
+.div1 {
+padding: 0px;
+
+}
+

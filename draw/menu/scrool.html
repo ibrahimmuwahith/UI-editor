@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>DIV滚动至顶部后固定</title>
+    <style>
+        .nav {
+            position:relative;
+            top:0;background:#00f;
+            width:100px;
+            height:100px
+        }
+    </style>
+</head>
+<body style="height:2000px;">
+<div style="height: 200px"></div>
+<div id="nav" class="nav">
+    Test Div
+</div>
+<script type="text/javascript">
+    function menuFixed(id) {
+        var obj = document.getElementById(id);
+        var _getHeight = obj.offsetTop;
+
+        window.onscroll = function () {
+            changePos(id, _getHeight);
+        }
+    }
+
+    function changePos(id, height) {
+        var obj = document.getElementById(id);
+        var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        if (scrollTop < height) {
+            obj.style.position = 'relative';
+        } else {
+            obj.style.position = 'fixed';
+        }
+    }
+    window.onload = function () {
+        menuFixed('nav');
+    }
+</script>
+</body>
+</html>

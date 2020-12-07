@@ -1,0 +1,245 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
+<!-- saved from url=(0098)mhtml:file://C:\Documents and Settings\engine\桌面\Folder tree with Drag and Drop capabilities.mht -->
+<HTML><HEAD><TITLE>Folder tree with Drag and Drop capabilities</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=utf-8">
+<META content="Alf Magne Kalleland (post@dhtmlgoodies.com)" name=Author>
+<META content="MSHTML 6.00.6000.16809" name=GENERATOR>
+<META 
+content="Folder tree with drag and drop,folder tree,list based folder tree,tree view,Drag and drop script,DHTML drag and drop,drag,drop" 
+name=KeyWords>
+<META content="A library of DHTML and Ajax scripts" name=Description>
+<META content=Norway name=country>
+<META content=post@dhtmlgoodies.com name=organization-Email>
+<META content="copyright 2005 - Alf Magne Kalleland" name=copyright>
+<META content=Worldwide name=coverage>
+<META content=30days name=revisit_after>
+<META content="A library DHTML and Ajax scripts - DHTMLgoodies.com" name=title>
+<META content=http://www.dhtmlgoodies.com/ name=identifier>
+<META content=English name=language>
+<META content=follow name=robots>
+<META content="index, follow" name=googlebot>
+<SCRIPT type=text/javascript>
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</SCRIPT>
+
+<SCRIPT type=text/javascript>
+var pageTracker = _gat._getTracker("UA-2042963-1");
+pageTracker._trackPageview();
+</SCRIPT>
+
+<SCRIPT src="tree_files/ajax.js" type=text/javascript></SCRIPT>
+
+<SCRIPT src="tree_files/context-menu.js" type=text/javascript></SCRIPT>
+<!-- IMPORTANT! INCLUDE THE context-menu.js FILE BEFORE drag-drop-folder-tree.js -->
+<SCRIPT src="tree_files/drag-drop-folder-tree.js" type=text/javascript>
+	
+	/************************************************************************************************************
+	(C) www.dhtmlgoodies.com, July 2006
+	
+	Update log:
+	
+	
+	This is a script from www.dhtmlgoodies.com. You will find this and a lot of other scripts at our website.	
+	
+	Terms of use:
+	You are free to use this script as long as the copyright message is kept intact.
+	
+	For more detailed license information, see http://www.dhtmlgoodies.com/index.html?page=termsOfUse 
+	
+	Thank you!
+	
+	www.dhtmlgoodies.com
+	Alf Magne Kalleland
+	
+	************************************************************************************************************/	
+	</SCRIPT>
+<LINK href="tree_files/drag-drop-folder-tree.css" type=text/css 
+rel=stylesheet></LINK><LINK href="tree_files/context-menu.css" type=text/css 
+rel=stylesheet></LINK>
+<STYLE type=text/css>IMG {
+	BORDER-TOP-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; BORDER-RIGHT-WIDTH: 0px
+}
+</STYLE>
+
+<SCRIPT type=text/javascript>
+	//--------------------------------
+	// Save functions
+	//--------------------------------
+	var ajaxObjects = new Array();
+	
+	// Use something like this if you want to save data by Ajax.
+	function saveMyTree()
+	{
+
+			saveString = treeObj.getNodeOrders();
+					alert("ok:\n\r" + saveString);
+			var ajaxIndex = ajaxObjects.length;
+			ajaxObjects[ajaxIndex] = new sack();
+			var url = 'saveNodes.php?saveString=' + saveString;
+			ajaxObjects[ajaxIndex].requestFile = url;	// Specifying which file to get
+			ajaxObjects[ajaxIndex].onCompletion = function() { saveComplete(ajaxIndex); } ;	// Specify function that will be executed after file has been found
+			ajaxObjects[ajaxIndex].runAJAX();		// Execute AJAX function			
+		
+	}
+	function saveComplete(index)
+	{
+		alert(ajaxObjects[index].response);			
+	}
+
+	
+	// Call this function if you want to save it by a form.
+	function saveMyTree_byForm()
+	{
+		document.myForm.elements['saveString'].value = treeObj.getNodeOrders();
+		document.myForm.submit();		
+	}
+	
+
+	</SCRIPT>
+</HEAD>
+<BODY>
+<SCRIPT type=text/javascript><!--
+google_ad_client = "pub-0714236485040063";
+/* 468x60, opprettet 14.08.08 */
+google_ad_slot = "7945138075";
+google_ad_width = 468;
+google_ad_height = 60;
+//-->
+</SCRIPT>
+
+<SCRIPT src="tree_files/show_ads.js" type=text/javascript>
+</SCRIPT>
+<BR><A href="http://www.dhtmlgoodies.com/index.html"><IMG 
+src="tree_files/mht46(1).tmp"></A> 
+<UL class=dhtmlgoodies_tree id=dhtmlgoodies_tree2>
+  <LI id=node0 noDrag="true" noSiblings="true" noDelete="true" 
+  noRename="true"><A 
+  href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">Root 
+  node</A> 
+  <UL>
+    <LI id=node1><A 
+    href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">Europe</A> 
+
+    <UL>
+      <LI id=node2 noDelete="true"><A 
+      href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">Norway</A> 
+
+      <UL>
+        <LI id=node3 noRename="true"><A 
+        href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">Stavanger</A> 
+
+        <LI id=node6><A 
+        href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">Bergen</A> 
+
+        <LI id=node7><A 
+        href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">Oslo</A> 
+        </LI></UL>
+      <LI id=node8><A 
+      href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">United 
+      Kingdom</A> 
+      <UL>
+        <LI id=node9><A 
+        href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">London</A> 
+
+        <LI id=node10><A 
+        href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">Manchester</A> 
+        </LI></UL>
+      <LI id=node12><A 
+      href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">Sweden</A> 
+
+      <LI id=node13><A 
+      href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">Denmark</A> 
+
+      <LI id=node14><A 
+      href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">Germany</A> 
+
+      <UL>
+        <LI id=node141><A 
+        href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">Berlin</A> 
+
+        <LI id=node142><A 
+        href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">Munich</A> 
+
+        <LI id=node143><A 
+        href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">Stuttgart</A> 
+        </LI></UL></LI></UL>
+    <LI id=node15><A 
+    href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">Asia</A> 
+
+    <UL>
+      <LI id=node151><A 
+      href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">Japan</A> 
+
+      <LI id=node152><A 
+      href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">China</A> 
+
+      <LI id=node153><A 
+      href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">Indonesia</A> 
+      </LI></UL>
+    <LI id=node16><A 
+    href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">Africa</A> 
+
+    <UL>
+      <LI id=node17><A 
+      href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">Tanzania</A> 
+
+      <LI id=node18><A 
+      href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">Kenya</A> 
+      </LI></UL>
+    <LI id=node19><A 
+    href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">America</A> 
+
+    <UL>
+      <LI id=node20><A 
+      href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">Canada</A> 
+
+      <LI id=node21><A 
+      href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">United 
+      States</A> 
+      <LI id=node22><A 
+      href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">Mexico</A> 
+
+      <LI id=node23><A 
+      href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">Argentina</A> 
+      </LI></UL>
+    <LI id=node24 noChildren="true"><A 
+    href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">Cannot 
+    have children</A> 
+    <LI id=node25 noDrag="true"><A 
+    href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">Cannot 
+    be dragged</A> </LI></UL></LI></UL>
+<FORM><INPUT onclick=saveMyTree() type=button value=Save> </FORM>
+<SCRIPT type=text/javascript>	
+	treeObj = new JSDragDropTree();
+	treeObj.setTreeId('dhtmlgoodies_tree2');
+	treeObj.setMaximumDepth(7);
+	treeObj.setMessageMaximumDepthReached('Maximum depth reached'); // If you want to show a message when maximum depth is reached, i.e. on drop.
+	treeObj.initTree();
+	treeObj.expandAll();
+
+	</SCRIPT>
+<A onclick=treeObj.collapseAll() 
+href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">Collapse 
+all</A> | <A onclick=treeObj.expandAll() 
+href="http://www.dhtmlgoodies.com/scripts/drag-drop-folder-tree/drag-drop-folder-tree.html#">Expand 
+all</A> 
+<P style="MARGIN: 10px">Use your mouse to drag and drop the nodes. Use the 
+"Save" button to save your changes. The new structure will be sent to the server 
+by use of Ajax(Asynchron XML and Javascript). </P>
+<P style="MARGIN: 10px"><B><I>Note!</I></B> I'm not saving the structure in this 
+demo in order to make the script look the same for all visitors</P><!-- Form - if you want to save it by form submission and not Ajax -->
+<FORM name=myForm action=saveNodes.php method=post><INPUT type=hidden 
+name=saveString> </FORM>
+<SCRIPT type=text/javascript>
+    var infolink_pid = 8714;
+    var infolink_link_color = '009900';
+    var infolink_title_color = '252667';
+    var infolink_text_color = '000000';
+    var infolink_ad_link_color = '24951E';
+    var infolink_ad_effect_type = 0;
+    var infolink_cat = 'software development';
+</SCRIPT>
+
+<SCRIPT src="tree_files/infolinks_main.js" type=text/javascript></SCRIPT>
+</BODY></HTML>
